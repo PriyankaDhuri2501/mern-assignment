@@ -93,52 +93,50 @@ const Navbar = () => {
           </Box>
         </Typography>
 
-        {/* Search Bar - Desktop */}
-        {!isMobile && (
+        {/* Search Bar - Responsive */}
+        <Box
+          component="form"
+          onSubmit={handleSearch}
+          sx={{
+            flexGrow: 1,
+            maxWidth: { xs: '100%', md: '600px' },
+            position: 'relative',
+            borderRadius: 1,
+            backgroundColor: alpha(theme.palette.common.white, 0.1),
+            '&:hover': {
+              backgroundColor: alpha(theme.palette.common.white, 0.15),
+            },
+            marginRight: { xs: 1, md: 3 },
+            display: { xs: 'none', sm: 'flex' }, // Hide on very small screens, show on sm and up
+            alignItems: 'center',
+          }}
+        >
           <Box
-            component="form"
-            onSubmit={handleSearch}
             sx={{
-              flexGrow: 1,
-              maxWidth: '600px',
-              position: 'relative',
-              borderRadius: 1,
-              backgroundColor: alpha(theme.palette.common.white, 0.1),
-              '&:hover': {
-                backgroundColor: alpha(theme.palette.common.white, 0.15),
-              },
-              marginRight: 3,
+              padding: '0 16px',
+              position: 'absolute',
+              pointerEvents: 'none',
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            <Box
-              sx={{
-                padding: '0 16px',
-                position: 'absolute',
-                pointerEvents: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <SearchIcon sx={{ color: 'text.secondary' }} />
-            </Box>
-            <InputBase
-              placeholder="Search movies..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              sx={{
-                color: 'inherit',
-                width: '100%',
-                '& .MuiInputBase-input': {
-                  padding: '10px 10px 10px 45px',
-                  width: '100%',
-                },
-              }}
-            />
+            <SearchIcon sx={{ color: 'text.secondary' }} />
           </Box>
-        )}
+          <InputBase
+            placeholder="Search movies..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            sx={{
+              color: 'inherit',
+              width: '100%',
+              '& .MuiInputBase-input': {
+                padding: '10px 10px 10px 45px',
+                width: '100%',
+              },
+            }}
+          />
+        </Box>
 
         <Box sx={{ flexGrow: 1 }} />
 
@@ -157,20 +155,6 @@ const Navbar = () => {
               }}
             >
               Home
-            </Button>
-            <Button
-              component={Link}
-              to="/search"
-              color="inherit"
-              startIcon={<SearchIcon />}
-              sx={{
-                color: 'text.primary',
-                '&:hover': {
-                  backgroundColor: alpha(theme.palette.common.white, 0.1),
-                },
-              }}
-            >
-              Search
             </Button>
             {isAuthenticated ? (
               <>
@@ -257,13 +241,6 @@ const Navbar = () => {
             onClick={handleMenuClose}
           >
             Home
-          </MenuItem>
-          <MenuItem
-            component={Link}
-            to="/search"
-            onClick={handleMenuClose}
-          >
-            Search
           </MenuItem>
           {isAuthenticated ? (
             <>
