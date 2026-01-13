@@ -63,6 +63,7 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
 
       // Redirect based on role
+      // Regular users go to home page, admins go to dashboard
       if (userData.role === 'admin') {
         navigate('/admin/dashboard');
       } else {
@@ -79,6 +80,8 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Signup function
+   * Creates a new user account but does NOT auto-login
+   * User must login separately after signup
    */
   const signup = async (username, email, password) => {
     try {
@@ -88,22 +91,9 @@ export const AuthProvider = ({ children }) => {
         password,
       });
 
-      const { token, user: userData } = response.data.data;
-
-      // Store token and user in localStorage
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(userData));
-
-      setUser(userData);
-
-      // Redirect based on role
-      if (userData.role === 'admin') {
-        navigate('/admin/dashboard');
-      } else {
-        navigate('/');
-      }
-
-      return { success: true };
+      // Signup successful - return success without storing token/user
+      // User will need to login separately
+      return { success: true, message: response.data.message || 'Account created successfully!' };
     } catch (error) {
       const message =
         error.response?.data?.message || 'Signup failed. Please try again.';

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -18,6 +18,7 @@ import {
   Visibility,
   VisibilityOff,
   Movie as MovieIcon,
+  CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 
@@ -34,6 +35,7 @@ const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -81,6 +83,7 @@ const SignupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess(false);
 
     if (!validateForm()) {
       return;
@@ -93,8 +96,22 @@ const SignupPage = () => {
     if (!result.success) {
       setError(result.error);
       setLoading(false);
+    } else {
+      // Show success message
+      setSuccess(true);
+      setLoading(false);
+      
+      // Redirect to login page after 2 seconds
+      setTimeout(() => {
+        navigate('/login', {
+          state: {
+            fromSignup: true,
+            message: 'Account created successfully! Please login with your credentials.',
+            emailOrUsername: formData.email, // Pre-fill email in login
+          },
+        });
+      }, 2000);
     }
-    // Navigation is handled by AuthContext after successful signup
   };
 
   return (
@@ -141,6 +158,22 @@ const SignupPage = () => {
               Join Movie App and discover amazing films
             </Typography>
           </Box>
+
+          {/* Success Alert */}
+          {success && (
+            <Alert
+              severity="success"
+              icon={<CheckCircleIcon />}
+              sx={{ mb: 3 }}
+            >
+              <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5 }}>
+                Account Created Successfully!
+              </Typography>
+              <Typography variant="body2">
+                Redirecting you to login page...
+              </Typography>
+            </Alert>
+          )}
 
           {/* Error Alert */}
           {error && (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   Container,
@@ -17,6 +17,7 @@ import {
   Visibility,
   VisibilityOff,
   Movie as MovieIcon,
+  CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 
@@ -31,10 +32,27 @@ const LoginPage = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   // Get redirect path from location state or default to home
   const from = location.state?.from?.pathname || '/';
+  
+  // Check if coming from signup page
+  useEffect(() => {
+    if (location.state?.fromSignup) {
+      setSuccess(location.state?.message || 'Account created successfully! Please login.');
+      // Pre-fill email if provided
+      if (location.state?.emailOrUsername) {
+        setFormData(prev => ({
+          ...prev,
+          emailOrUsername: location.state.emailOrUsername,
+        }));
+      }
+      // Clear location state after using it
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleChange = (e) => {
     setFormData({
@@ -108,6 +126,18 @@ const LoginPage = () => {
               Sign in to continue to Movie App
             </Typography>
           </Box>
+
+          {/* Success Alert (from signup) */}
+          {success && (
+            <Alert
+              severity="success"
+              icon={<CheckCircleIcon />}
+              sx={{ mb: 3 }}
+              onClose={() => setSuccess('')}
+            >
+              {success}
+            </Alert>
+          )}
 
           {/* Error Alert */}
           {error && (
