@@ -9,6 +9,8 @@ import SignupPage from './pages/SignupPage';
 import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import MovieDetails from './pages/MovieDetails';
+import WatchlistPage from './pages/WatchlistPage';
+import RecentlyViewedPage from './pages/RecentlyViewedPage';
 import { useAuth } from './context/AuthContext';
 
 function App() {
@@ -66,6 +68,24 @@ function App() {
             element={
               <ProtectedRoute>
                 <MovieDetails />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Watchlist & Recently Viewed */}
+          <Route
+            path="/watchlist"
+            element={
+              <ProtectedRoute>
+                <WatchlistPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/recently-viewed"
+            element={
+              <ProtectedRoute>
+                <RecentlyViewedPage />
               </ProtectedRoute>
             }
           />

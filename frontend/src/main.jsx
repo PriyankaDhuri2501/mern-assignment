@@ -6,6 +6,7 @@ import CssBaseline from '@mui/material/CssBaseline'
 import App from './App.jsx'
 import theme from './theme/theme'
 import { AuthProvider } from './context/AuthContext'
+import { WatchlistProvider } from './context/WatchlistContext'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -13,7 +14,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AuthProvider>
-          <App />
+          <WatchlistProvider>
+            <App />
+          </WatchlistProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

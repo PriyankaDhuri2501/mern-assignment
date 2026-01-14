@@ -107,27 +107,103 @@ const Navbar = () => {
       }}
     >
       <Toolbar sx={{ py: 1 }}>
-        {/* Logo */}
-        <Typography
+        {/* Logo - CineVault */}
+        <Box
           component={Link}
           to="/"
-          variant="h5"
           sx={{
-            fontWeight: 700,
-            color: 'primary.main',
+            display: 'flex',
+            alignItems: 'center',
             textDecoration: 'none',
             mr: 4,
-            letterSpacing: '-0.5px',
-            '&:hover': {
-              color: 'primary.light',
-            },
           }}
         >
-          MOVIE
-          <Box component="span" sx={{ color: 'secondary.main' }}>
-            APP
+          {/* Logo Mark: Vault + Film Reel */}
+          <Box
+            sx={{
+              width: 36,
+              height: 36,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle at 30% 30%, #f5c518 0, #b20710 45%, #0a0a0a 75%)',
+              border: '2px solid rgba(245, 197, 24, 0.9)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+              boxShadow: '0 0 12px rgba(0,0,0,0.8)',
+              mr: 1.5,
+            }}
+          >
+            {/* Inner vault ring */}
+            <Box
+              sx={{
+                width: 20,
+                height: 20,
+                borderRadius: '50%',
+                border: '2px solid rgba(255,255,255,0.6)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+              }}
+            >
+              {/* Film reel dots */}
+              {['0deg', '90deg', '180deg', '270deg'].map((angle) => (
+                <Box
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={angle}
+                  sx={{
+                    width: 3,
+                    height: 3,
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255,255,255,0.9)',
+                    position: 'absolute',
+                    transform: `rotate(${angle}) translate(7px)`,
+                  }}
+                />
+              ))}
+              {/* Vault lock bar */}
+              <Box
+                sx={{
+                  width: 8,
+                  height: 2,
+                  borderRadius: 1,
+                  backgroundColor: 'rgba(255,255,255,0.85)',
+                }}
+              />
+            </Box>
           </Box>
-        </Typography>
+
+          {/* Wordmark */}
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 800,
+                letterSpacing: 2,
+                lineHeight: 1,
+              }}
+            >
+              <Box component="span" sx={{ color: 'primary.main' }}>
+                CINE
+              </Box>
+              <Box component="span" sx={{ color: 'secondary.main' }}>
+                VAULT
+              </Box>
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                letterSpacing: 2,
+                textTransform: 'uppercase',
+                fontSize: '0.6rem',
+              }}
+            >
+              Secure Your Watchlist
+            </Typography>
+          </Box>
+        </Box>
 
         {/* Search Bar - Responsive */}
           <Box
@@ -197,6 +273,36 @@ const Navbar = () => {
             >
               Home
             </Button>
+            {isAuthenticated && (
+              <>
+                <Button
+                  component={Link}
+                  to="/watchlist"
+                  color="inherit"
+                  sx={{
+                    color: 'text.primary',
+                    '&:hover': {
+                      backgroundColor: alpha(theme.palette.common.white, 0.1),
+                    },
+                  }}
+                >
+                  Watchlist
+                </Button>
+                <Button
+                  component={Link}
+                  to="/recently-viewed"
+                  color="inherit"
+                  sx={{
+                    color: 'text.primary',
+                    '&:hover': {
+                      backgroundColor: alpha(theme.palette.common.white, 0.1),
+                    },
+                  }}
+                >
+                  Recently Viewed
+                </Button>
+              </>
+            )}
             {isAuthenticated ? (
               <>
                 {isAdmin && (

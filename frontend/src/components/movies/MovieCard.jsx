@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useWatchlist } from '../../context/WatchlistContext';
 import {
   Card,
   CardMedia,
@@ -16,6 +17,8 @@ const MovieCard = ({ movie }) => {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   const { isAuthenticated } = useAuth();
+  const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist();
+  const inWatchlist = isInWatchlist(movie._id);
 
   const handleClick = () => {
     if (!isAuthenticated) {
@@ -23,6 +26,24 @@ const MovieCard = ({ movie }) => {
       return;
     }
     navigate(`/movies/${movie._id}`);
+  };
+
+  const handleViewDetails = (e) => {
+    e.stopPropagation();
+    handleClick();
+  };
+
+  const handleToggleWatchlist = (e) => {
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: `/movies/${movie._id}` } });
+      return;
+    }
+    if (inWatchlist) {
+      removeFromWatchlist(movie._id);
+    } else {
+      addToWatchlist(movie);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -113,6 +134,55 @@ const MovieCard = ({ movie }) => {
             <MovieIcon sx={{ fontSize: 64, color: 'text.secondary', opacity: 0.5 }} />
           </Box>
         )}
+
+        {/* Quick Actions */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 8,
+            right: 8,
+            display: 'flex',
+            gap: 1,
+            opacity: isHovered ? 1 : 0,
+            transform: isHovered ? 'translateY(0)' : 'translateY(8px)',
+            transition: 'all 0.2s ease',
+          }}
+        >
+          <Box
+            onClick={handleViewDetails}
+            sx={{
+              px: 1.5,
+              py: 0.5,
+              borderRadius: 999,
+              backgroundColor: 'rgba(0,0,0,0.75)',
+              color: 'white',
+              fontSize: '0.7rem',
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: 'primary.main',
+              },
+            }}
+          >
+            View
+          </Box>
+          <Box
+            onClick={handleToggleWatchlist}
+            sx={{
+              px: 1.5,
+              py: 0.5,
+              borderRadius: 999,
+              backgroundColor: inWatchlist ? 'primary.main' : 'rgba(0,0,0,0.75)',
+              color: 'white',
+              fontSize: '0.7rem',
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: inWatchlist ? 'primary.dark' : 'primary.main',
+              },
+            }}
+          >
+            {inWatchlist ? 'Saved' : 'Watchlist'}
+          </Box>
+        </Box>
 
         {/* Rating Badge */}
         <Box

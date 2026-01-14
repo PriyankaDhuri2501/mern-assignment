@@ -21,12 +21,14 @@ import {
 } from '@mui/icons-material';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useWatchlist } from '../context/WatchlistContext';
 import ConfirmationModal from '../components/common/ConfirmationModal';
 
 const MovieDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
+  const { addToWatchlist, removeFromWatchlist, isInWatchlist, addRecentlyViewed } = useWatchlist();
 
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,7 +41,9 @@ const MovieDetails = () => {
       try {
         setLoading(true);
         const response = await api.get(`/movies/${id}`);
-        setMovie(response.data.data.movie);
+        const loadedMovie = response.data.data.movie;
+        setMovie(loadedMovie);
+        addRecentlyViewed(loadedMovie);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load movie');
       } finally {
@@ -59,6 +63,15 @@ const MovieDetails = () => {
     } finally {
       setDeleteLoading(false);
       setDeleteModalOpen(false);
+    }
+  };
+
+  const handleToggleWatchlist = () => {
+    if (!movie?._id) return;
+    if (isInWatchlist(movie._id)) {
+      removeFromWatchlist(movie._id);
+    } else {
+      addToWatchlist(movie);
     }
   };
 
@@ -185,6 +198,26 @@ const MovieDetails = () => {
           <Typography variant="caption" color="text.secondary">
             Added on {formatDate(movie.createdAt)}
           </Typography>
+
+          <Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Button
+              variant={isInWatchlist(movie._id) ? 'outlined' : 'contained'}
+              startIcon={<StarIcon />}
+              onClick={handleToggleWatchlist}
+              sx={{
+                background:
+                  !isInWatchlist(movie._id) &&
+                  'linear-gradient(45deg, #e50914, #f40612)',
+                '&:hover': {
+                  background:
+                    !isInWatchlist(movie._id) &&
+                    'linear-gradient(45deg, #f40612, #b20710)',
+                },
+              }}
+            >
+              {isInWatchlist(movie._id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
+            </Button>
+          </Box>
 
           {isAdmin && (
             <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
