@@ -28,11 +28,6 @@ const MovieCard = ({ movie }) => {
     navigate(`/movies/${movie._id}`);
   };
 
-  const handleViewDetails = (e) => {
-    e.stopPropagation();
-    handleClick();
-  };
-
   const handleToggleWatchlist = (e) => {
     e.stopPropagation();
     if (!isAuthenticated) {
@@ -135,36 +130,17 @@ const MovieCard = ({ movie }) => {
           </Box>
         )}
 
-        {/* Quick Actions */}
+        {/* Quick Actions - Watchlist */}
         <Box
           sx={{
             position: 'absolute',
             bottom: 8,
             right: 8,
-            display: 'flex',
-            gap: 1,
             opacity: isHovered ? 1 : 0,
             transform: isHovered ? 'translateY(0)' : 'translateY(8px)',
             transition: 'all 0.2s ease',
           }}
         >
-          <Box
-            onClick={handleViewDetails}
-            sx={{
-              px: 1.5,
-              py: 0.5,
-              borderRadius: 999,
-              backgroundColor: 'rgba(0,0,0,0.75)',
-              color: 'white',
-              fontSize: '0.7rem',
-              cursor: 'pointer',
-              '&:hover': {
-                backgroundColor: 'primary.main',
-              },
-            }}
-          >
-            View
-          </Box>
           <Box
             onClick={handleToggleWatchlist}
             sx={{

@@ -395,30 +395,50 @@ const BulkMovieUpload = ({ onSuccess }) => {
               borderRadius: 1,
               fontSize: '0.75rem',
               overflow: 'auto',
+              maxHeight: '300px',
             }}
           >
 {`[
   {
-    "title": "Movie Title",
-    "description": "Movie description",
-    "releaseDate": "2024-01-15",
-    "duration": 120,
-    "rating": 8.5,
+    "title": "The Dark Knight",
+    "description": "When the menace known as the Joker wreaks havoc...",
+    "releaseDate": "2008-07-18",
+    "duration": 152,
+    "rating": 9.0,
     "poster": "https://example.com/poster.jpg",
-    "trailerId": "dQw4w9WgXcQ",
+    "trailerId": "EXeTwQWrcwY",
     "streamingLinks": [
       {
         "platform": "Netflix",
-        "url": "https://www.netflix.com/title/..."
+        "url": "https://www.netflix.com/title/70079583"
       },
       {
-        "platform": "Amazon Prime",
-        "url": "https://www.amazon.com/..."
+        "platform": "Amazon Prime Video",
+        "url": "https://www.amazon.com/dp/B001V9N4YW"
+      }
+    ]
+  },
+  {
+    "title": "Inception",
+    "description": "A skilled thief is given a chance at redemption...",
+    "releaseDate": "2010-07-16",
+    "duration": 148,
+    "rating": 8.8,
+    "poster": "https://example.com/poster2.jpg",
+    "trailerId": "YoHD9xeInc0",
+    "streamingLinks": [
+      {
+        "platform": "HBO Max",
+        "url": "https://www.hbomax.com/feature/inception"
       }
     ]
   }
 ]`}
           </Box>
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1, fontStyle: 'italic' }}>
+            💡 Note: A complete example file with multiple movies is available as <code>bulk-movies-example.json</code> in the project root. 
+            All fields except title, description, releaseDate, duration, and rating are optional.
+          </Typography>
         </Box>
       </Box>
     </Box>
