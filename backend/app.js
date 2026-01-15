@@ -7,20 +7,9 @@ import { apiLimiter } from './middleware/rateLimit.middleware.js';
 import authRoutes from './routes/auth.routes.js';
 import movieRoutes from './routes/movie.routes.js';
 import adminRoutes from './routes/admin.routes.js';
-import { validateEnv } from './utils/envValidator.js';
 
 // Load environment variables
 dotenv.config();
-
-// Validate environment variables (only in non-serverless or on startup)
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-  try {
-    validateEnv();
-  } catch (error) {
-    console.error('❌ Environment validation failed:', error.message);
-    process.exit(1);
-  }
-}
 
 // Initialize Express app
 const app = express();
@@ -65,40 +54,25 @@ app.use(
   })
 );
 
-// Security headers
-app.use((req, res, next) => {
-  // Basic security headers
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  
-  // Only add Strict-Transport-Security in production with HTTPS
-  if (process.env.NODE_ENV === 'production') {
-    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  }
-  
-  next();
-});
-
-app.use(express.json({ limit: '10mb' })); // Parse JSON bodies with size limit
+// Request body size limits (prevent DoS attacks)
+app.use(express.json({ limit: '10mb' })); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true, limit: '10mb' })); // Parse URL-encoded bodies
 
 // Apply rate limiting to all routes
 app.use('/api', apiLimiter);
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  const isDevelopment = process.env.NODE_ENV === 'development';
+app.get('/health', async (req, res) => {
+  const mongoose = (await import('mongoose')).default;
+  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  const isHealthy = dbStatus === 'connected';
   
-  res.status(200).json({
-    status: 'success',
-    message: 'Server is running',
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? 'healthy' : 'unhealthy',
+    message: isHealthy ? 'Server is running' : 'Server is running but database is disconnected',
+    database: dbStatus,
     timestamp: new Date().toISOString(),
-    // Only expose environment in development
-    ...(isDevelopment && {
-      environment: process.env.NODE_ENV || 'development',
-    }),
+    environment: process.env.NODE_ENV || 'development',
   });
 });
 

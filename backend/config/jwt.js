@@ -5,20 +5,25 @@
 const getJWTSecret = () => {
   const secret = process.env.JWT_SECRET;
   
-  // In production, JWT_SECRET must be set
-  if (process.env.NODE_ENV === 'production' && !secret) {
-    throw new Error('JWT_SECRET environment variable is required in production');
+  // In production, JWT_SECRET is required
+  if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+    if (!secret) {
+      throw new Error(
+        '❌ CRITICAL: JWT_SECRET environment variable is required in production. ' +
+        'Please set it in your Vercel environment variables.'
+      );
+    }
+    if (secret.length < 32) {
+      throw new Error(
+        '❌ SECURITY: JWT_SECRET must be at least 32 characters long for production.'
+      );
+    }
   }
   
-  // In development, use fallback but warn
+  // In development, use fallback if not set (with warning)
   if (!secret) {
-    console.warn('⚠️  WARNING: Using default JWT_SECRET. Set JWT_SECRET in production!');
+    console.warn('⚠️  WARNING: JWT_SECRET not set. Using fallback (NOT SECURE FOR PRODUCTION)');
     return 'fallback_secret_change_in_production';
-  }
-  
-  // Validate secret strength in production
-  if (process.env.NODE_ENV === 'production' && secret.length < 32) {
-    console.warn('⚠️  WARNING: JWT_SECRET should be at least 32 characters long');
   }
   
   return secret;
