@@ -17,35 +17,40 @@ const app = express();
 // CORS Configuration - Allow multiple origins
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  process.env.VERCEL_FRONTEND_URL,
   'http://localhost:5173',
   'http://localhost:3000',
-  // Add your Vercel frontend URL here when deployed
-  process.env.VERCEL_FRONTEND_URL,
 ].filter(Boolean); // Remove undefined values
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, Postman, etc.)
+      // Allow requests with no origin (mobile apps, Postman, server-to-server, etc.)
       if (!origin) return callback(null, true);
 
       // Check if origin is in allowed list
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        // In production, you might want to be more strict
-        // For now, allow all origins in development
+        // In development, allow all origins for easier testing
         if (process.env.NODE_ENV === 'development') {
           callback(null, true);
         } else {
-          // In production, reject unknown origins
-          callback(new Error('Not allowed by CORS'));
+          // In production, check if it's a Vercel preview URL
+          // Vercel preview URLs follow pattern: https://*-*.vercel.app
+          const isVercelPreview = origin.includes('.vercel.app');
+          if (isVercelPreview) {
+            callback(null, true);
+          } else {
+            callback(new Error('Not allowed by CORS'));
+          }
         }
       }
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Authorization'],
   })
 );
 

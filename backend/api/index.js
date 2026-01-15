@@ -8,13 +8,20 @@
 
 import app from '../app.js';
 import connectDB from '../config/database.js';
+import mongoose from 'mongoose';
 
 // Cache MongoDB connection for serverless (reuse across invocations)
 let isConnected = false;
 
 async function ensureDatabaseConnection() {
-  if (isConnected) {
+  // Check if already connected
+  if (isConnected && mongoose.connection.readyState === 1) {
     return;
+  }
+
+  // If connection exists but is not ready, close it first
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.connection.close();
   }
 
   try {
@@ -34,10 +41,13 @@ export default async function handler(req, res) {
   try {
     await ensureDatabaseConnection();
   } catch (error) {
+    console.error('Database connection failed:', error);
     return res.status(500).json({
       status: 'error',
-      message: 'Database connection failed',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      message: 'Database connection failed. Please try again later.',
+      ...(process.env.NODE_ENV === 'development' && {
+        error: error.message,
+      }),
     });
   }
 
