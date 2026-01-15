@@ -22,6 +22,9 @@ async function ensureDatabaseConnection() {
 // Vercel serverless function entry point
 // Signature: (req, res) → Express-compatible
 export default async function handler(req, res) {
+  // Log request for debugging
+  console.log(`📥 ${req.method} ${req.url}`);
+  
   try {
     await ensureDatabaseConnection();
   } catch (error) {
@@ -29,10 +32,12 @@ export default async function handler(req, res) {
     return res.status(500).json({
       status: 'error',
       message: 'Database connection failed',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
 
   // Delegate handling to the Express app (all routes remain intact)
+  // Express app will handle routing: /api/movies, /api/auth, /health, etc.
   return app(req, res);
 }
 
