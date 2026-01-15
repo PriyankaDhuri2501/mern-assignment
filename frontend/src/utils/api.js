@@ -2,7 +2,9 @@ import axios from 'axios';
 
 /**
  * Axios instance with base configuration
- * Uses environment variable for backend URL in production, or '/api' for development
+ * 
+ * For production (separate backend): Set VITE_API_URL=https://cine-vault-umber.vercel.app/api
+ * For development: Uses '/api' which is proxied to http://localhost:5000
  */
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',

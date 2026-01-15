@@ -17,6 +17,7 @@ const app = express();
 // CORS Configuration - Allow multiple origins
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  'https://cine-vault1.vercel.app', // Frontend production URL
   'http://localhost:5173',
   'http://localhost:3000',
   process.env.VERCEL_URL,
