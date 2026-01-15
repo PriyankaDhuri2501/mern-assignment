@@ -1,34 +1,43 @@
 import dotenv from 'dotenv';
-import serverless from 'serverless-http';
 import app from './app.js';
 import connectDB from './config/database.js';
 
-// Load environment variables (for local dev and some serverless environments)
+// Load environment variables
 dotenv.config();
 
-// Optional: serverless-http wrapper (mainly for AWS-style environments)
-// Vercel Node functions use (req, res), so we still call the Express app directly below.
-const lambdaHandler = serverless(app); // eslint-disable-line no-unused-vars
-
+// Cache MongoDB connection for serverless (reuse across invocations)
 let isDbConnected = false;
 
 async function ensureDatabaseConnection() {
-  if (!isDbConnected) {
+  // Check if already connected using mongoose connection state
+  const mongoose = await import('mongoose');
+  
+  if (isDbConnected && mongoose.default.connection.readyState === 1) {
+    return;
+  }
+
+  // If connection exists but is not ready, reset flag
+  if (mongoose.default.connection.readyState !== 0 && mongoose.default.connection.readyState !== 1) {
+    isDbConnected = false;
+  }
+
+  try {
     await connectDB();
     isDbConnected = true;
+    console.log('✅ MongoDB connected for serverless function');
+  } catch (error) {
+    console.error('❌ MongoDB connection error:', error.message);
+    isDbConnected = false;
+    throw error;
   }
 }
 
 // Vercel serverless function entry point
-// Signature: (req, res) → Express-compatible
 export default async function handler(req, res) {
-  // Log request for debugging
-  console.log(`📥 ${req.method} ${req.url}`);
-  
+  // Ensure MongoDB connection before handling request
   try {
     await ensureDatabaseConnection();
   } catch (error) {
-    console.error('❌ Database connection failed:', error.message);
     return res.status(500).json({
       status: 'error',
       message: 'Database connection failed',
@@ -36,8 +45,7 @@ export default async function handler(req, res) {
     });
   }
 
-  // Delegate handling to the Express app (all routes remain intact)
-  // Express app will handle routing: /api/movies, /api/auth, /health, etc.
+  // Delegate all handling to the Express app
+  // Express app handles all routes: /, /health, /api/movies, /api/auth, etc.
   return app(req, res);
 }
-

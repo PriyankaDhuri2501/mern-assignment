@@ -19,9 +19,9 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
   'http://localhost:5173',
   'http://localhost:3000',
-  process.env.VERCEL_URL, // Vercel automatically sets this (e.g., https://your-app.vercel.app)
+  process.env.VERCEL_URL,
   process.env.VERCEL_FRONTEND_URL,
-].filter(Boolean); // Remove undefined values
+].filter(Boolean);
 
 app.use(
   cors({
@@ -37,7 +37,7 @@ app.use(
         if (process.env.NODE_ENV === 'development') {
           callback(null, true);
         } else {
-          // In production, also allow Vercel preview URLs (pattern: https://*-*.vercel.app)
+          // In production, allow all Vercel preview URLs
           const isVercelPreview = origin.includes('.vercel.app');
           if (isVercelPreview) {
             callback(null, true);
@@ -53,11 +53,20 @@ app.use(
   })
 );
 
-app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Apply rate limiting to all routes
+// Apply rate limiting to all API routes
 app.use('/api', apiLimiter);
+
+// Root route - Simple health check
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Backend is running!',
+    timestamp: new Date().toISOString(),
+  });
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -81,7 +90,7 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 // Connect to MongoDB (only in non-serverless environments)
-// In serverless, connection is handled per-request
+// In serverless, connection is handled per-request in index.js
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   connectDB();
 }
