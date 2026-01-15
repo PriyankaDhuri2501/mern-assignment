@@ -15,7 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <CssBaseline />
         <AuthProvider>
           <WatchlistProvider>
-            <App />
+        <App />
           </WatchlistProvider>
         </AuthProvider>
       </ThemeProvider>

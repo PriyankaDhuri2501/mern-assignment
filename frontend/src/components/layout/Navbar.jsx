@@ -270,7 +270,7 @@ const Navbar = () => {
                     backgroundColor: 'rgba(255,255,255,0.9)',
                     position: 'absolute',
                     transform: `rotate(${angle}) translate(7px)`,
-                  }}
+          }}
                 />
               ))}
               {/* Vault lock bar */}
@@ -298,7 +298,7 @@ const Navbar = () => {
               <Box component="span" sx={{ color: 'primary.main' }}>
                 CINE
               </Box>
-              <Box component="span" sx={{ color: 'secondary.main' }}>
+          <Box component="span" sx={{ color: 'secondary.main' }}>
                 VAULT
               </Box>
             </Typography>
@@ -495,11 +495,11 @@ const Navbar = () => {
                 Watchlist
               </MenuItem>
               {isAdmin && (
-                <MenuItem
-                  component={Link}
+          <MenuItem
+            component={Link}
                   to="/admin/dashboard"
-                  onClick={handleMenuClose}
-                >
+            onClick={handleMenuClose}
+          >
                   Dashboard
                 </MenuItem>
               )}
@@ -507,15 +507,15 @@ const Navbar = () => {
               <MenuItem onClick={handleLogout}>
                 <LogoutIcon sx={{ mr: 1 }} />
                 Logout
-              </MenuItem>
+          </MenuItem>
             </>
           ) : (
-            <MenuItem
-              component={Link}
-              to="/login"
-              onClick={handleMenuClose}
-            >
-              Login
+          <MenuItem
+            component={Link}
+            to="/login"
+            onClick={handleMenuClose}
+          >
+            Login
             </MenuItem>
           )}
         </Menu>
